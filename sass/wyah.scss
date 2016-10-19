@@ -1,0 +1,24 @@
+#wyah__wrap {
+    font-size: 16px;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    padding: 0.7em 0.4em 0.1em;
+    background: rebeccapurple;
+    color: antiquewhite;
+    text-align: center;
+    transition: height .5s;
+
+
+    .collapsed {
+      height: 2.5em;
+
+    }
+    input {
+      background: rgba(255,255,255,.03);
+      border: 0;
+      display: inline-block;
+    }
+}
