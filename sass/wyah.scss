@@ -1,4 +1,6 @@
 @import 'reset.css';
+// @import 'dissociate.css'; TODO: Not working yet, move all set css to that file, and than trigger add this callback
+//http://stackoverflow.com/questions/6186454/is-there-a-callback-on-completion-of-a-css3-animation
 //Colors
 $main: #999;
 //Content CSS
@@ -7,6 +9,7 @@ html {
   $d: .5s;
   height: 100%;
   width: 100%;
+  overflow: auto;
 
   // Image background, independent of html bg
   &:before {
@@ -26,7 +29,7 @@ html {
 
   body {
     //z-index:1;
-
+    overflow: hidden;
     transition: all $d ease-in;
     transform: scale(1);
     height: 100%;
@@ -44,16 +47,18 @@ html {
     }
 
     body {
+      pointer-events: none;
       position: fixed;
       z-index: 2;
-      top: 5%;
-      bottom: 5%;
-      left: 5%;
-      height: 220%;
-      width: 90%;
-      right: 5%;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      //height: 220%;
+      width: 100%;
+      right: 0;
       overflow: hidden;
       transform: scale(.3);
+      box-shadow: 0 128px 126px -60px black;
 
       opacity: .7;
       > * {
@@ -141,7 +146,9 @@ html {
 
 @keyframes dissociacionBg {
   0%   { opacity: 0; }
-  100% { opacity: 1; }
+  100% {
+    opacity: 1;
+  }
 }
 
 

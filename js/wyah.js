@@ -35,16 +35,10 @@ function wyahInit() {
 
 function dissociationSwitch() {
     //if (switch==false)
-    if (document.documentElement.classList.contains('dissociated')) {
-        document.documentElement.classList.remove('dissociated');
-        console.log('Class .dissociated should be removed');
-    }
-    else {
+    document.documentElement.classList.toggle('dissociation-prepare');
+    document.documentElement.classList.toggle('dissociated');
 
-        document.documentElement.classList.add('dissociated');
-        console.log('Class .dissociated should be added');
-
-    }
+    console.log('Class .dissociated toggled');
 }
 /*
 function currentInput() {
