@@ -1,10 +1,11 @@
-body {
-  font-size: 16px;
-  display: flex;
-
-}
-
-#wyah__wrap {
+@import 'reset.css';
+//Colors
+$main: #999;
+#wyah-wrap {
+    // Input placeholders color
+    ::-webkit-input-placeholder {
+      color: darken($main,25%);
+    }
     z-index: 999999999999999;
     font-size: 16px;
     width: 100%;
@@ -13,21 +14,49 @@ body {
     right: 0;
     height: 4em;
     padding: 0.7em 0.4em 0.1em;
-    background: rebeccapurple;
-    color: antiquewhite;
+    background: $main;
+    color: rgba(255,255,255,.3);
     text-align: center;
     transition: height .5s;
-
-
+    border-bottom: 3px solid darken($main, 10%);
     .collapsed {
       height: 2.5em;
 
     }
-    input {
-      background: rgba(255,255,255,.03);
-      border: 0;
-      display: block;
+    #wyah-form {
+      display: table;
       margin: 0 auto;
-      text-align: center;
+      input {
+        display: block;
+        float: left;
+        background: rgba(white,.73);
+        border: 0;
+        padding: .5em 1em;
+        text-align: center;
+        color: darken($main,40%);
+        margin: 0 1em;
+        &:focus {
+          outline:0;
+          background: rgba(white,.8);
+        }
+        &[type="text"] {
+          width: 30em;
+        }
+        &[type="number"] {
+          position: relative;
+          //right: -5em; // Default
+          width: 5em;
+
+        }
+
+      }
+      label {
+        position: relative;
+        //right: -5em; // Default
+        //line-height: 3em;
+        vertical-align: bottom;
+
+      }
     }
+
 }
