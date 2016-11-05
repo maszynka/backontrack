@@ -3,8 +3,7 @@
 //console.log('wayh JS has started!');
 
 //Checks:
-
-var anim = false, freeze= false;
+freeze= false;
 var i = 0, i2=0 , i3=0;
 var wayhExists = document.getElementById("wayh"); //Check if extensions code exists in a DOM
 //var supportShadowDOM = document.head.createShadowRoot; //Check ShadowDOM support
@@ -12,16 +11,16 @@ var wayhExists = document.getElementById("wayh"); //Check if extensions code exi
 //Debugging
 clog = function(txt, styling) {
     if (typeof styling === 'undefined') {
-       console.log(txt);
+       console.log("%c"+"W:"+"%c"+txt, 'background: #222; color: #badaaa', 'background: #aaa; color: #111');
     }
     else {
-        console.log(txt,styling);
+        console.log("%c"+"W:"+"%c"+txt,'background: #222; color: #badaaa',styling);
     }
 };
 
 //wayh Init - extension's HTML injection into a DOM
 function wayhInjectWrapper() {
-    console.log("wayh: wrapper added");
+    console.log("wrapper added");
     // HTML string
     var shadomDomTest = '<span>ShadowDOM is not supported in your browser! <a href="http://caniuse.com/#feat=shadowdom">Check Can I use</a></span>';
     var htmlString = '<form id="wayh-form">'
@@ -47,97 +46,88 @@ function wayhInjectWrapper() {
 
 
 function wayhAdd() {
-    console.log('wayh:Add');
+    console.log('Add');
     document.documentElement.classList.add('wayh-init', 'dissociated');
 }
 
-function wayhRemove() {
-    clog('wayh:Remove() - transitionEnd Event occured');
+function wayhRemove(e) {
+    if (document.body !== event.target) return;
+    clog('Remove() - transitionEnd Event occured');
     classCheck();
     document.documentElement.classList.remove('wayh-init');
     document.body.removeEventListener("transitionend", wayhRemove, false);
     classCheck();
-    clog('wayh: transitionEnd Event listener should be removed, i3: ' + i3);
-    freeze = false;
+    clog('transitionEnd Event listener should be removed, i3: ' + i3);
+    i3++;
 }
 
-function bodyAnimationListener() {
-    document.body.addEventListener("transitionstart", function(e) {
-        if (e.propertyName == "transform") {
-            anim = true;
-            clog('anim: ' + anim);
-        }
-    }, false);
-    document.body.addEventListener("transitionend", function(e) {
-        if (e.propertyName == "transform") {
-            anim = false;
-
-
-            clog('anim: ' + anim + ' i: ' + i);
-            i++;
-        }
-    }, false);
-    return anim;
-}
-
-function unfreezeOnTranslateEnd () {
-    var fr=true;
-    var freezing = function() {
+function freezer() {
+    freeze=true;
+    clog('Freeze: ' + freeze, 'background: blue; color: white' );
+    var freezing = function(e) {
+        if (document.body !== event.target) return;
         if (e.propertyName == "transform") {
 
-
-            clog('Freeze removed ');
             document.body.removeEventListener("transitionend", freezing, false);
-            fr = false
+            freeze = false;
+            clog('Freeze: ' + freeze, 'background: blue; color: white' );
         }
-
     };
 
     document.body.addEventListener("transitionend", freezing, false);
-
 }
 
 function classCheck() {
-    clog('wayh classes: \n' + (document.documentElement.classList.contains('wayh-init')&&'wayh-init') + ' ' + (document.documentElement.classList.contains('dissociated')&&'dissociated'));
-}
 
+    if (document.documentElement.classList.contains('dissociated')&&(!document.documentElement.classList.contains('wayh-init'))) {
+        clog('classes Error', 'background-color: red; color: black')
+    } else {
+        clog('classes: ' + (document.documentElement.classList.contains('wayh-init')&&'wayh-init') + ' ' + (document.documentElement.classList.contains('dissociated')&&'dissociated'));
+    }
+}
 
 function dissociationSwitch() {
     //if (switch==false)
-    if (((!document.documentElement.classList.contains('wayh-init')&&!document.documentElement.classList.contains('dissociated'))&&!freeze)&&!anim) {
-        clog('[Adding]');
-        freeze = true;
+    if ((!document.documentElement.classList.contains('wayh-init')&&!document.documentElement.classList.contains('dissociated'))&&!freeze) {
+        clog('[Adding]', 'color: orange');
+        freezer();
         classCheck(); // chcecks if wayhAdd works properly
         wayhAdd();
         classCheck(); // chcecks if wayhAdd works properly
 
-        clog('[/Adding]');
-        //console.log('wayh: dissociation css injected');
+        clog('[/Adding]', 'color: orange');
+        //console.log('dissociation css injected');
     }
-    else if (((document.documentElement.classList.contains('wayh-init')&&document.documentElement.classList.contains('dissociated'))&&!freeze)&&!anim) {
-        clog('[Removing classes]');
-        freeze = true;
+    else if ((document.documentElement.classList.contains('wayh-init')&&document.documentElement.classList.contains('dissociated'))&&!freeze) {
+        clog('[Removing classes]', 'color: purple');
         classCheck();
         document.documentElement.classList.remove('dissociated');
+        freezer();
         clog('Class dissociated should be romoved');
         classCheck();
-        clog('wayh:adding transitionend listener with wayRemove callback');
+        clog('adding transitionend listener with wayRemove callback');
         document.body.addEventListener("transitionend", wayhRemove, false);
-        clog('wayh:eventListener transisionend added ' + i2);
-        //console.log('wayh: removing dissociacion effect');
+        clog('eventListener transisionend added ' + i2);
+        i2++;
+        //console.log('removing dissociacion effect');
         classCheck();
-        clog('[/Removing classes]');
+        clog('[/Removing classes]', 'color: purple');
     }
     else if (freeze){
-        clog('[error_1] wayh: you have to wait till animation will end');
+        clog('[error_1] you have to wait till animation will end');
         classCheck();
-    }
-    else if (bodyAnimationListener()){
-        clog('[error_2] wayh: something went wrong, or you have to wait till animation will end');
-        classCheck();
+        clog('[/error_1] you have to wait till animation will end');
     }
     else if (!document.documentElement.classList.contains('wayh-init')&&document.documentElement.classList.contains('dissociated')){
-        clog('[error_3] wayh: Dissociated exists, wayh-init class doesnt!')
+        clog('[error_3] Dissociated exists, wayh-init class doesnt!', 'color: blue');
+        document.documentElement.classList.remove('dissociated');
+        clog('[/error_3] Dissociated exists, wayh-init class doesnt!', 'color: blue');
+    }
+    else {
+        clog('[error_4] Unkown error', 'color: red');
+        classCheck();
+        clog('freeze: ' + freeze)
+        clog('[/error_4] Unkown error', 'color: red');
     }
 
 
@@ -157,7 +147,7 @@ function currentInput() {
 }*/
 
 // Check: if wayh exists in a DOM
-
+clog('[click ocured]');
 dissociationSwitch();
 /*if (!wayhExists) {
     wayhInjectWrapper();

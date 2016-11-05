@@ -4,7 +4,7 @@ $main: #999;
 
 html.wayh-init {
   background: white;
-  $d: .5s;
+  $d: 1s;
   height: 100%;
   width: 100%;
   overflow: auto;
@@ -38,7 +38,6 @@ html.wayh-init {
 
   }
   &.dissociated {
-
     &:before{
       opacity: 1;
     }
@@ -65,8 +64,6 @@ html.wayh-init {
     }
   }
 }
-
-
 
 #wyah {
   // Input placeholders color
