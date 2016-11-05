@@ -9,7 +9,7 @@
   ],
   "background": {
     "scripts": ["js/content_script.js"],
-    "css": ["css/wyah.css"],
+    "css": ["css/wayh.css"],
     "persistent": false
   },
   "browser_action": {

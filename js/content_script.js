@@ -1,7 +1,7 @@
 
 chrome.browserAction.onClicked.addListener(function(tab) {
 
-  chrome.tabs.executeScript(null, {file: "js/wyah.js"});
-  chrome.tabs.insertCSS(null, {file: "css/wyah.css"});
+  chrome.tabs.executeScript(null, {file: "js/wayh.js"});
+  chrome.tabs.insertCSS(null, {file: "css/wayh.css"});
 });
 
