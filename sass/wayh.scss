@@ -8,7 +8,7 @@ $main: #999;
 //Content CSS
 
 
-#wyah {
+#wayh {
     // Input placeholders color
     ::-webkit-input-placeholder {
       color: darken($main,25%);
@@ -19,6 +19,8 @@ $main: #999;
     position: fixed;
     top: 0;
     left: 0;
+    bottom: 0;
+    right: 0;
     height: auto;
     //height: 2em;
     padding: 0.7em 0.4em 0.5em;

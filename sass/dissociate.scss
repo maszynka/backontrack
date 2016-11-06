@@ -3,8 +3,9 @@ $main: #999;
 //Content CSS
 
 html.wayh-init {
+  position: fixed;
   background: white;
-  $d: 1s;
+  $d: 2s;
   height: 100%;
   width: 100%;
   overflow: auto;
@@ -31,6 +32,7 @@ html.wayh-init {
     transform: scale(1);
     height: 100%;
     outline: 20px solid #243965;
+    transform-origin: 95% 10%;
     > * {
       overflow: hidden;
 
@@ -46,14 +48,14 @@ html.wayh-init {
       pointer-events: none;
       position: fixed;
       z-index: 2;
-      top: 0;
-      bottom: 0;
-      left: 0;
+      //width: 100px;
+      //height: 400px;
+
       //height: 220%;
       width: 100%;
-      right: 0;
+      border: 10px black;
       overflow: hidden;
-      transform: scale(.3);
+      transform: scale(.4);
       box-shadow: 0 128px 126px -60px black;
 
       opacity: .7;
