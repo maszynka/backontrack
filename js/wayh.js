@@ -4,9 +4,7 @@
 
 //Checks:
 var freeze = false;
-var i2=0, ton=1, toff=1;
 var wayhExists = document.getElementById("wayh"); //Check if extensions code exists in a DOM
-//var supportShadowDOM = document.head.createShadowRoot; //Check ShadowDOM support
 
 //Debugging
 clog = function(txt, styling) {
@@ -23,10 +21,17 @@ function wayhInjectWrapper() {
     console.log("wrapper added");
     // HTML string
     var shadomDomTest = '<span>ShadowDOM is not supported in your browser! <a href="http://caniuse.com/#feat=shadowdom">Check Can I use</a></span>';
-    var htmlString = '<form id="wayh-form">'
+    var _htmlString = '<form id="wayh-form">'
                     + ' <input type="text" placeholder="Why are you here?"/>'
                     + ' <label><input id="wayh-f-minutes" type="number" placeholder="5"/>minutes</label>'
                     + '</form>';
+
+    var htmlString =
+          '<h1>What do I want to get from this visit?</h1>'
+        + '<form id="wayh-form">'
+        + ' <input type="text" placeholder="Why are you here?"/>'
+        + ' <label><input id="wayh-f-minutes" type="number" placeholder="5"/>minutes</label>'
+        + '</form>';
         //+ '<span contenteditable="true">sdfsd</span>'
     // The Shadow DOM part
 
@@ -105,18 +110,10 @@ function dissociationSwitch() {
     else if ((document.documentElement.classList.contains('wayh-init')&&document.documentElement.classList.contains('dissociated'))&&!freeze) {
         freeze = true;
         clog('[Removing classes]', 'color: purple');
-        classCheck();
-        //freezer();
         document.documentElement.classList.remove('dissociated');
-        //clog('Class dissociated should be romoved');
-        classCheck();
-        //clog('adding transitionend listener with wayRemove callback');
         document.body.removeEventListener("transitionend", wayhRemove, false);
         document.body.addEventListener("transitionend", wayhRemove, false);
-        clog('eventListener transisionend added ' + i2);
-        i2++;
-        //console.log('removing dissociacion effect');
-        classCheck();
+                classCheck();
         clog('[/Removing classes]', 'color: purple');
     }
     else if (freeze){
@@ -127,7 +124,7 @@ function dissociationSwitch() {
     else if (!document.documentElement.classList.contains('wayh-init')&&document.documentElement.classList.contains('dissociated')){
         clog('[error_3] Dissociated exists, wayh-init class doesnt!', 'color: blue');
         document.documentElement.classList.remove('dissociated');
-        clog('[error_3] Dissociated exists, wayh-init class doesnt!', 'color: blue');
+        clog('[/error_3] Dissociated exists, wayh-init class doesnt!', 'color: blue');
     }
     else {
         clog('[error_4] Unkown error', 'color: red');

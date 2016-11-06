@@ -1,14 +1,16 @@
 //Colors
 $main: #999;
+$body-scale: .2;
 //Content CSS
 
 html.wayh-init {
   position: fixed;
   background: white;
-  $d: 2s;
+  $d: .2s;
   height: 100%;
   width: 100%;
   overflow: auto;
+
 
   // Image background, independent of html bg
   &:before {
@@ -26,6 +28,7 @@ html.wayh-init {
   }
 
   body {
+    z-index: 2;
     //z-index:1;
     overflow: hidden;
     transition: transform $d ease-in;
@@ -47,7 +50,7 @@ html.wayh-init {
     body {
       pointer-events: none;
       position: fixed;
-      z-index: 2;
+
       //width: 100px;
       //height: 400px;
 
@@ -55,7 +58,7 @@ html.wayh-init {
       width: 100%;
       border: 10px black;
       overflow: hidden;
-      transform: scale(.4);
+      transform: scale($body-scale);
       box-shadow: 0 128px 126px -60px black;
 
       opacity: .7;
@@ -65,77 +68,6 @@ html.wayh-init {
       }
     }
   }
-}
-
-#wyah {
-  // Input placeholders color
-  ::-webkit-input-placeholder {
-    color: darken($main,25%);
-  }
-  z-index: 999999999999999;
-  font-size: 26px;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: auto;
-  //height: 2em;
-  padding: 0.7em 0.4em 0.5em;
-  background: $main;
-  color: rgba(255,255,255,.3);
-  text-align: center;
-  transition: height .5s;
-  border-bottom: 3px solid darken($main, 10%);
-  z-index: 1;
-  * {
-    display: none;
-  }
-  .collapsed {
-    height: 2.5em;
-
-  }
-  &::shadow {
-    #wyah-form {
-      font-size: 16px;
-      display: table;
-      margin: 0 auto;
-      input {
-        display: block;
-        float: left;
-        background: rgba(white,.73);
-        border: 0;
-        padding: .5em 1em;
-        text-align: center;
-        color: darken($main,40%);
-        margin: 0 1em;
-        font-size: 1em;
-        &:focus {
-          outline:0;
-          background: rgba(white,.8);
-        }
-        &[type="text"] {
-          width: 30em;
-        }
-        &[type="number"] {
-          position: relative;
-          //right: -5em; // Default
-          width: 5em;
-
-        }
-
-      }
-      label {
-        margin-left: 1em;
-        position: relative;
-        //right: -5em; // Default
-        //line-height: 3em;
-        vertical-align: bottom;
-
-      }
-    }
-
-  }
-
 }
 
 
