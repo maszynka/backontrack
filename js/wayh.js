@@ -26,12 +26,14 @@ function wayhInjectWrapper() {
                     + ' <label><input id="wayh-f-minutes" type="number" placeholder="5"/>minutes</label>'
                     + '</form>';
 
+
     var htmlString =
-          '<h1>What do I want to get from this visit?</h1>'
-        + '<form id="wayh-form">'
-        + ' <input type="text" placeholder="Why are you here?"/>'
-        + ' <label><input id="wayh-f-minutes" type="number" placeholder="5"/>minutes</label>'
-        + '</form>';
+     //   + '<div contenteditable="true"><span>type something</span></div>'
+            '<form id="wayh-form">'
+            + ' <label><span>Please state the reason of this visit</span><textarea id="reason" type="text" placeholder="{ here }"></textarea></label>'
+            + '<label><span>Get me reminded in</span> <input id="wayh-f-minutes" type="number" placeholder="5"/><span>minutes</span></label>'
+            + ' <button type="submit">Confirm</button>' // first time use of button! So excited.
+            + '</form>';
         //+ '<span contenteditable="true">sdfsd</span>'
     // The Shadow DOM part
 

@@ -4,7 +4,10 @@
 // @import 'dissociate.css'; TODO: Not working yet, move all set css to that file, and than trigger add this callback
 //http://stackoverflow.com/questions/6186454/is-there-a-callback-on-completion-of-a-css3-animation
 //Colors
-$main: #424242;
+$main_bg: #424242;
+$main_c: rgb(232, 232, 232);
+$large-fs: 130px;
+
 //Content CSS
 
 #wayh {
@@ -26,16 +29,13 @@ html.wayh-init #wayh {
     height: auto;
     //height: 2em;
     padding: 0.7em 0.4em 0.5em;
-    background: $main;
+    background: $main_bg;
     color: rgba(255,255,255,.3);
     text-align: center;
     transition: height .5s;
-    border-bottom: 3px solid darken($main, 10%);
     z-index: 1;
   // Input placeholders color
-  ::-webkit-input-placeholder {
-    color: darken($main,25%);
-  }
+
     * {
       display: none;
     }
@@ -44,24 +44,29 @@ html.wayh-init #wayh {
 
     }
   &::shadow {
+
     > * {
-      transform: scale(.5);
+      transform: scale(.6);
       transform-origin: 10% 5%;
     }
-    h1 {
-      width: 100%;
-      font-size: 150px;
-      margin: 0;
-      padding: 0;
-      text-align: left;
-      color: #e8e8e8;
-      text-shadow: rgba(0, 0, 0, 0.57) 0px 128px 126px, rgb(23, 23, 23) 0px 0px 10px;
-    }
-    #wyah-form {
-      font-size: 16px;
-      display: table;
-      margin: 0 auto;
-      input {
+
+    #wayh-form {
+
+      font-size: $large-fs;
+      display: block;
+      margin: .5em 0 0 0;
+      font-family: sans-serif;
+      span,label, button, input, textarea {
+        float: left;
+        width: 100%;
+        font-size: $large-fs / 1.5; //cannot use relative font-size - wanna know why? :D
+        margin: 0;
+        padding: 0;
+        text-align: left;
+        color: #e8e8e8;
+        text-shadow: rgba(0, 0, 0, 0.57) 0px 48px 46px, rgb(23, 23, 23) 0px 0px 5px;
+      }
+      /*input {
         display: block;
         float: left;
         background: rgba(white,.73);
@@ -77,6 +82,9 @@ html.wayh-init #wayh {
         }
         &[type="text"] {
           width: 30em;
+          font-size: 4em;
+          background: none;
+          border: 0;
         }
         &[type="number"] {
           position: relative;
@@ -85,15 +93,50 @@ html.wayh-init #wayh {
 
         }
 
-      }
-      label {
-        margin-left: 1em;
-        position: relative;
-        //right: -5em; // Default
-        //line-height: 3em;
-        vertical-align: bottom;
+      }*/
+      input, textarea, button {
+        background: rgba(white,.73);
+        border: 0;
+        color: darken($main_c, 30%);
+        text-shadow: none;
+        //font-size: $large-fs;
+        font-size: inherit;
+        background: none;
+        width: auto;
+        border: 0;
+        width: 100%;
+        margin-top: .5em;
+        &::-webkit-input-placeholder {
+          color: initial;
+          -webkit-text-fill-color: rgba($main_c, .2);
+          letter-spacing: 0;
+          font-family: sans-serif;
+        }
+        &:focus {
+          outline:0;
+          &::-webkit-input-placeholder {
+            opacity: 0;
+          }
+        }
+        &[type="text"] {
+          //margin-top: 1em;
+        }
+        &[type="number"] {
+          width:auto;
 
+        }
       }
+      button {
+        width: auto;
+        border: #2f2f2f solid .01em;
+        padding: .1em .3em;
+        margin: 1em -.3em;
+        background: #565656;
+        color: #2d2d2d;
+        float: right;
+        font-size:.8em;
+      }
+
     }
 
   }
