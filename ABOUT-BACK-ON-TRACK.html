@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BackOnTrack — Mindful Browsing</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #0a0a0f;
+    --paper: #f4f1eb;
+    --accent: #e63946;
+    --accent-glow: #ff6b6b;
+    --calm: #457b9d;
+    --calm-light: #a8dadc;
+    --warm: #f4a261;
+    --muted: #6c757d;
+    --glass: rgba(255,255,255,0.06);
+    --radius: 20px;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    background: var(--ink);
+    color: var(--paper);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── Grain overlay ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    opacity: 0.07;
+    top: -100px;
+    right: -200px;
+    border-radius: 50%;
+    animation: pulse 8s ease-in-out infinite;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--calm) 0%, transparent 70%);
+    opacity: 0.06;
+    bottom: -50px;
+    left: -100px;
+    border-radius: 50%;
+    animation: pulse 10s ease-in-out infinite reverse;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.07; }
+    50% { transform: scale(1.3); opacity: 0.12; }
+  }
+
+  .hero-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(230,57,70,0.3);
+    padding: 0.5rem 1.5rem;
+    border-radius: 100px;
+    margin-bottom: 2.5rem;
+    animation: fadeInUp 0.8s ease-out;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+  }
+
+  .hero h1 span {
+    display: block;
+    background: linear-gradient(135deg, var(--accent), var(--warm));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: var(--muted);
+    max-width: 580px;
+    margin-bottom: 3rem;
+    font-weight: 300;
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+  }
+
+  .hero-nav {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+  }
+
+  .hero-nav a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--paper);
+    text-decoration: none;
+    padding: 0.8rem 2rem;
+    border: 1px solid rgba(244,241,235,0.15);
+    border-radius: 100px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-nav a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 30px rgba(230,57,70,0.15);
+  }
+
+  .hero-nav a.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .hero-nav a.primary:hover {
+    background: var(--accent-glow);
+    box-shadow: 0 0 40px rgba(230,57,70,0.3);
+    color: var(--ink);
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Scroll indicator ── */
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    animation: fadeInUp 0.8s ease-out 1s both;
+  }
+
+  .scroll-hint span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .scroll-hint .line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--muted), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 1; height: 40px; }
+    50% { opacity: 0.3; height: 20px; }
+  }
+
+  /* ── Sections ── */
+  section {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+  }
+
+  .section-text {
+    color: var(--muted);
+    max-width: 700px;
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
+
+  /* ── Problem / Solution ── */
+  .problem-solution {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .ps-card {
+    padding: 2.5rem;
+    border-radius: var(--radius);
+    border: 1px solid rgba(244,241,235,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ps-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    opacity: 0.04;
+  }
+
+  .ps-card.problem {
+    background: linear-gradient(135deg, rgba(230,57,70,0.08), transparent);
+    border-color: rgba(230,57,70,0.15);
+  }
+
+  .ps-card.solution {
+    background: linear-gradient(135deg, rgba(69,123,157,0.08), transparent);
+    border-color: rgba(69,123,157,0.15);
+  }
+
+  .ps-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .ps-card.problem h3 { color: var(--accent); }
+  .ps-card.solution h3 { color: var(--calm-light); }
+
+  .ps-card p {
+    color: var(--muted);
+    line-height: 1.8;
+    font-size: 0.95rem;
+  }
+
+  .ps-card ul {
+    list-style: none;
+    margin-top: 1rem;
+  }
+
+  .ps-card ul li {
+    padding: 0.4rem 0;
+    padding-left: 1.2rem;
+    position: relative;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .ps-card ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.85rem;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .ps-card.problem ul li::before { background: var(--accent); }
+  .ps-card.solution ul li::before { background: var(--calm-light); }
+
+  /* ── Architecture / Graph ── */
+  .arch-graph {
+    margin-top: 4rem;
+    position: relative;
+  }
+
+  .arch-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 3rem;
+    background: rgba(255,255,255,0.02);
+    border-radius: var(--radius);
+    border: 1px solid rgba(244,241,235,0.06);
+  }
+
+  .arch-layer {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .arch-node {
+    padding: 1rem 1.8rem;
+    border-radius: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    text-align: center;
+    border: 1px solid;
+    position: relative;
+    min-width: 160px;
+    transition: all 0.3s ease;
+  }
+
+  .arch-node:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  }
+
+  .arch-node.user {
+    background: rgba(244,162,97,0.1);
+    border-color: rgba(244,162,97,0.3);
+    color: var(--warm);
+  }
+
+  .arch-node.extension {
+    background: rgba(230,57,70,0.1);
+    border-color: rgba(230,57,70,0.3);
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 1.3rem 2.5rem;
+  }
+
+  .arch-node.module {
+    background: rgba(69,123,157,0.1);
+    border-color: rgba(69,123,157,0.3);
+    color: var(--calm-light);
+  }
+
+  .arch-node.tech {
+    background: rgba(244,241,235,0.03);
+    border-color: rgba(244,241,235,0.1);
+    color: var(--muted);
+    font-size: 0.72rem;
+  }
+
+  .arch-connector {
+    width: 2px;
+    height: 30px;
+    background: linear-gradient(to bottom, var(--accent), var(--calm));
+    opacity: 0.3;
+  }
+
+  .arch-connector-h {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(to right, var(--calm), var(--accent));
+    opacity: 0.3;
+  }
+
+  .arch-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0.5;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  /* ── Modules cards ── */
+  .modules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .module-card {
+    padding: 2.5rem;
+    border-radius: var(--radius);
+    border: 1px solid rgba(244,241,235,0.06);
+    background: rgba(255,255,255,0.02);
+    transition: all 0.4s ease;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .module-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--calm));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .module-card:hover {
+    border-color: rgba(244,241,235,0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .module-card:hover::after { transform: scaleX(1); }
+
+  .module-card .module-icon {
+    font-size: 2rem;
+    margin-bottom: 1.2rem;
+    display: block;
+  }
+
+  .module-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.7rem;
+  }
+
+  .module-card p {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+
+  .module-card .module-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--calm-light);
+    border: 1px solid rgba(69,123,157,0.3);
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    margin-top: 1rem;
+  }
+
+  /* ── Value section ── */
+  .value-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .value-card {
+    text-align: center;
+    padding: 2.5rem 2rem;
+    border-radius: var(--radius);
+    border: 1px solid rgba(244,241,235,0.06);
+    background: rgba(255,255,255,0.015);
+    transition: all 0.3s ease;
+  }
+
+  .value-card:hover {
+    border-color: rgba(244,241,235,0.12);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .value-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1.2rem;
+    display: block;
+  }
+
+  .value-card h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.7rem;
+  }
+
+  .value-card p {
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  /* ── Tech stack ── */
+  .tech-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .tech-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 100px;
+    border: 1px solid rgba(244,241,235,0.1);
+    color: var(--muted);
+    background: rgba(255,255,255,0.02);
+    transition: all 0.2s ease;
+  }
+
+  .tech-pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ── Flow diagram ── */
+  .flow-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1.5rem;
+    min-width: 130px;
+  }
+
+  .flow-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .flow-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    text-align: center;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    max-width: 110px;
+  }
+
+  .flow-arrow {
+    font-size: 1.5rem;
+    color: rgba(244,241,235,0.15);
+    margin: 0 -0.5rem;
+    align-self: center;
+  }
+
+  /* ── Relationship map ── */
+  .relationship-map {
+    margin-top: 3rem;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .rel-entity {
+    padding: 1.5rem 2rem;
+    border-radius: 14px;
+    text-align: center;
+  }
+
+  .rel-entity.left {
+    background: rgba(230,57,70,0.08);
+    border: 1px solid rgba(230,57,70,0.2);
+  }
+
+  .rel-entity.right {
+    background: rgba(69,123,157,0.08);
+    border: 1px solid rgba(69,123,157,0.2);
+  }
+
+  .rel-entity h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  .rel-entity p {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .rel-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0 1rem;
+  }
+
+  .rel-link-line {
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--calm));
+    opacity: 0.4;
+  }
+
+  .rel-link span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 4rem 2rem;
+    border-top: 1px solid rgba(244,241,235,0.06);
+    margin-top: 4rem;
+  }
+
+  footer p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  footer a:hover { text-decoration: underline; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .problem-solution,
+    .modules-grid { grid-template-columns: 1fr; }
+    .value-grid { grid-template-columns: 1fr; }
+    .relationship-map { grid-template-columns: 1fr; }
+    .rel-link { transform: rotate(90deg); margin: 0.5rem 0; }
+    .flow-steps { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+    .arch-layer { flex-direction: column; }
+    .arch-connector-h { width: 2px; height: 30px; background: linear-gradient(to bottom, var(--calm), var(--accent)); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════ HERO ════════════════════════════════════════ -->
+<header class="hero">
+  <div class="hero-badge">Browser Extension &middot; Digital Wellbeing</div>
+  <h1>
+    Back<span>OnTrack</span>
+  </h1>
+  <p class="hero-sub">
+    A browser extension that fights mindless scrolling by asking one simple question:
+    <strong style="color:var(--paper)">"Why are you here?"</strong>
+  </p>
+  <nav class="hero-nav">
+    <a href="#how-it-works" class="primary">How It Works</a>
+    <a href="#modules">Modules</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#value">Value</a>
+    <a href="app-wyah.html">WYAH Module</a>
+    <a href="app-dissociation.html">Dissociation Module</a>
+  </nav>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="line"></div>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════ PROBLEM / SOLUTION ════════════════════════════════════════ -->
+<section id="how-it-works">
+  <div class="section-label">01 &mdash; The Problem &amp; The Solution</div>
+  <h2 class="section-title">We open a browser<br>and forget <em>why</em></h2>
+  <p class="section-text">
+    The average person spends 7+ hours daily online. Most of that time is unintentional &mdash;
+    we open a tab with purpose, get pulled into a feed, and surface 45 minutes later having
+    accomplished nothing. BackOnTrack intervenes at the critical moment.
+  </p>
+
+  <div class="problem-solution">
+    <div class="ps-card problem">
+      <h3>The Problem</h3>
+      <p>Modern websites are engineered to capture attention. Users lose track of intent the moment they arrive.</p>
+      <ul>
+        <li>Infinite scroll patterns hijack dopamine loops</li>
+        <li>Auto-playing content derails focus</li>
+        <li>No mechanism exists to check your own intent</li>
+        <li>Hours lost to unconscious browsing daily</li>
+      </ul>
+    </div>
+    <div class="ps-card solution">
+      <h3>The Solution</h3>
+      <p>BackOnTrack creates a pause &mdash; a micro-intervention that restores intentionality to browsing.</p>
+      <ul>
+        <li>Prompts you to declare your intent on arrival</li>
+        <li>Reminds you of that intent after a set time</li>
+        <li>Visually dissociates the page to break the trance</li>
+        <li>Lightweight, non-intrusive, fully user-controlled</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ HOW IT WORKS FLOW ════════════════════════════════════════ -->
+<section>
+  <div class="section-label">02 &mdash; User Flow</div>
+  <h2 class="section-title">Four steps to mindful browsing</h2>
+
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-label">Click the extension icon</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-label">Type why you are here</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-label">Set a timer (default 5 min)</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <div class="flow-label">Get reminded &amp; refocused</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ MODULES ════════════════════════════════════════ -->
+<section id="modules">
+  <div class="section-label">03 &mdash; Core Modules</div>
+  <h2 class="section-title">Two engines, one mission</h2>
+  <p class="section-text">
+    BackOnTrack consists of two complementary modules that work together
+    to snap you back to conscious browsing.
+  </p>
+
+  <div class="modules-grid">
+    <a href="app-wyah.html" class="module-card">
+      <span class="module-icon">?</span>
+      <h3>"Why Am I Here?" (WYAH)</h3>
+      <p>
+        The cognitive module. Injects a minimal input form into any webpage via Shadow DOM.
+        You declare your reason for visiting, set a countdown timer, and the extension
+        reminds you of your stated purpose when time expires.
+      </p>
+      <span class="module-tag">Intent Capture &rarr; Timer &rarr; Reminder</span>
+    </a>
+    <a href="app-dissociation.html" class="module-card">
+      <span class="module-icon">~</span>
+      <h3>Dissociation Effect</h3>
+      <p>
+        The perceptual module. Applies a visual distortion effect to the entire page content,
+        creating a CSS-driven "dissociation" that makes the page feel unfamiliar &mdash;
+        breaking the autopilot state and forcing conscious re-engagement.
+      </p>
+      <span class="module-tag">Visual Disruption &rarr; Break Autopilot</span>
+    </a>
+  </div>
+
+  <!-- Relationship between modules -->
+  <div class="relationship-map">
+    <div class="rel-entity left">
+      <h4>WYAH Module</h4>
+      <p>Cognitive intervention</p>
+    </div>
+    <div class="rel-link">
+      <span>triggers</span>
+      <div class="rel-link-line"></div>
+      <span>enhances</span>
+    </div>
+    <div class="rel-entity right">
+      <h4>Dissociation Module</h4>
+      <p>Perceptual intervention</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ ARCHITECTURE ════════════════════════════════════════ -->
+<section id="architecture">
+  <div class="section-label">04 &mdash; Architecture</div>
+  <h2 class="section-title">How the pieces connect</h2>
+
+  <div class="arch-graph">
+    <div class="arch-diagram">
+      <div class="arch-label">User Layer</div>
+      <div class="arch-layer">
+        <div class="arch-node user">Browser Toolbar Button</div>
+      </div>
+
+      <div class="arch-connector"></div>
+
+      <div class="arch-label">Extension Core</div>
+      <div class="arch-layer">
+        <div class="arch-node extension">BackOnTrack Extension (Manifest V2)</div>
+      </div>
+
+      <div class="arch-connector"></div>
+
+      <div class="arch-label">Background Process</div>
+      <div class="arch-layer">
+        <div class="arch-node module">content_script.js</div>
+      </div>
+
+      <div class="arch-connector"></div>
+
+      <div class="arch-label">Content Injection</div>
+      <div class="arch-layer">
+        <div class="arch-node module">wyah.js</div>
+        <div class="arch-connector-h"></div>
+        <div class="arch-node module">wyah.css / reset.css</div>
+      </div>
+
+      <div class="arch-connector"></div>
+
+      <div class="arch-label">Visual Effects</div>
+      <div class="arch-layer">
+        <div class="arch-node tech">dissociate.scss</div>
+        <div class="arch-connector-h"></div>
+        <div class="arch-node tech">wyah.scss</div>
+      </div>
+
+      <div class="arch-connector"></div>
+
+      <div class="arch-label">Target</div>
+      <div class="arch-layer">
+        <div class="arch-node user">Any Webpage DOM</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ TECH STACK ════════════════════════════════════════ -->
+<section>
+  <div class="section-label">05 &mdash; Technology</div>
+  <h2 class="section-title">Built with web standards</h2>
+  <p class="section-text">
+    No frameworks, no build dependencies beyond Sass. BackOnTrack is intentionally lightweight &mdash;
+    pure JavaScript injected directly into the DOM via Chrome's extension APIs.
+  </p>
+
+  <div class="tech-row">
+    <span class="tech-pill">JavaScript (ES5+)</span>
+    <span class="tech-pill">Chrome Extensions API</span>
+    <span class="tech-pill">Manifest V2</span>
+    <span class="tech-pill">Shadow DOM</span>
+    <span class="tech-pill">SCSS / Sass</span>
+    <span class="tech-pill">CSS Animations</span>
+    <span class="tech-pill">DOM Injection</span>
+    <span class="tech-pill">Content Scripts</span>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ VALUE ════════════════════════════════════════ -->
+<section id="value">
+  <div class="section-label">06 &mdash; Business &amp; Social Value</div>
+  <h2 class="section-title">Why this matters</h2>
+
+  <div class="value-grid">
+    <div class="value-card">
+      <span class="value-icon">+</span>
+      <h4>Productivity Gains</h4>
+      <p>By restoring intent-driven browsing, users reclaim hours previously lost to aimless scrolling. Even a 20% reduction in unintentional browsing saves ~1.5 hours daily.</p>
+    </div>
+    <div class="value-card">
+      <span class="value-icon">&hearts;</span>
+      <h4>Mental Wellbeing</h4>
+      <p>Mindless consumption correlates with increased anxiety and decreased satisfaction. BackOnTrack promotes conscious digital habits, supporting healthier screen relationships.</p>
+    </div>
+    <div class="value-card">
+      <span class="value-icon">&equiv;</span>
+      <h4>Digital Literacy</h4>
+      <p>Teaching users to recognize attention-hijacking patterns builds lasting awareness. The tool educates through practice, not preaching.</p>
+    </div>
+    <div class="value-card">
+      <span class="value-icon">&sect;</span>
+      <h4>Zero Data Collection</h4>
+      <p>Runs entirely client-side. No analytics, no tracking, no server calls. Your browsing intent stays on your machine &mdash; privacy by architecture.</p>
+    </div>
+    <div class="value-card">
+      <span class="value-icon">&lt;/&gt;</span>
+      <h4>Open Source</h4>
+      <p>Fully open, auditable, and extensible. Community-driven development ensures the tool serves users, not advertisers or engagement metrics.</p>
+    </div>
+    <div class="value-card">
+      <span class="value-icon">&uarr;</span>
+      <h4>Scalable Impact</h4>
+      <p>As a browser extension, deployment is instant and global. Every install is one more person practicing intentional browsing.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ FOOTER ════════════════════════════════════════ -->
+<footer>
+  <p>
+    BackOnTrack &middot; Open Source Browser Extension &middot;
+    <a href="app-wyah.html">WYAH Module</a> &middot;
+    <a href="app-dissociation.html">Dissociation Module</a>
+  </p>
+</footer>
+
+</body>
+</html>
