@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WYAH Module &mdash; "Why Am I Here?" | BackOnTrack</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #0a0a0f;
+    --paper: #f4f1eb;
+    --accent: #e63946;
+    --accent-glow: #ff6b6b;
+    --calm: #457b9d;
+    --calm-light: #a8dadc;
+    --warm: #f4a261;
+    --muted: #6c757d;
+    --radius: 20px;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    background: var(--ink);
+    color: var(--paper);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── Navigation ── */
+  .top-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1.2rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(244,241,235,0.05);
+  }
+
+  .top-nav a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .top-nav a:hover { color: var(--paper); }
+
+  .top-nav .brand {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    color: var(--paper);
+    font-size: 0.9rem;
+  }
+
+  .nav-links { display: flex; gap: 1.5rem; }
+
+  /* ── Hero ── */
+  .sub-hero {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 2rem 4rem;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .sub-hero::before {
+    content: '?';
+    position: absolute;
+    font-family: 'Playfair Display', serif;
+    font-size: 30rem;
+    font-weight: 900;
+    color: var(--accent);
+    opacity: 0.03;
+    top: 0;
+    right: -5rem;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .sub-hero .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+
+  .sub-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+  }
+
+  .sub-hero h1 em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--accent), var(--warm));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .sub-hero p {
+    color: var(--muted);
+    font-size: 1.1rem;
+    max-width: 600px;
+    line-height: 1.8;
+  }
+
+  /* ── Content sections ── */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem 6rem;
+  }
+
+  .content section {
+    margin-bottom: 5rem;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--calm-light);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.15;
+  }
+
+  .prose {
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.9;
+    max-width: 680px;
+  }
+
+  .prose strong { color: var(--paper); font-weight: 500; }
+
+  /* ── Code block ── */
+  .code-block {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(244,241,235,0.08);
+    border-radius: 14px;
+    padding: 2rem;
+    margin-top: 2rem;
+    overflow-x: auto;
+  }
+
+  .code-block pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+
+  .code-block .comment { color: rgba(244,241,235,0.25); }
+  .code-block .keyword { color: var(--accent); }
+  .code-block .string { color: var(--calm-light); }
+  .code-block .fn { color: var(--warm); }
+
+  /* ── Feature list ── */
+  .feature-list {
+    list-style: none;
+    margin-top: 2rem;
+  }
+
+  .feature-list li {
+    padding: 1.2rem 0;
+    border-bottom: 1px solid rgba(244,241,235,0.05);
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .feature-list li:last-child { border-bottom: none; }
+
+  .feature-marker {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 2rem;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .feature-content h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  .feature-content p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  /* ── Diagram ── */
+  .sequence-diagram {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(244,241,235,0.06);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    margin-top: 2rem;
+  }
+
+  .seq-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 0;
+  }
+
+  .seq-actor {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    min-width: 100px;
+    text-align: right;
+    color: var(--calm-light);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .seq-arrow {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--calm));
+    opacity: 0.3;
+    position: relative;
+  }
+
+  .seq-arrow::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: -4px;
+    border: 5px solid transparent;
+    border-left-color: var(--calm);
+    opacity: 0.5;
+  }
+
+  .seq-action {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    min-width: 180px;
+    padding: 0.4rem 0.8rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 6px;
+  }
+
+  /* ── Status ── */
+  .status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .status-card {
+    padding: 1.5rem;
+    border-radius: 14px;
+    border: 1px solid rgba(244,241,235,0.06);
+  }
+
+  .status-card.working {
+    border-color: rgba(69,123,157,0.3);
+    background: rgba(69,123,157,0.05);
+  }
+
+  .status-card.wip {
+    border-color: rgba(244,162,97,0.3);
+    background: rgba(244,162,97,0.05);
+  }
+
+  .status-card h4 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .status-card.working h4 { color: var(--calm-light); }
+  .status-card.wip h4 { color: var(--warm); }
+
+  .status-card p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .status-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .status-card.working .status-badge {
+    color: var(--calm-light);
+    border: 1px solid rgba(69,123,157,0.3);
+  }
+
+  .status-card.wip .status-badge {
+    color: var(--warm);
+    border: 1px solid rgba(244,162,97,0.3);
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    border-top: 1px solid rgba(244,241,235,0.06);
+  }
+
+  footer a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 768px) {
+    .status-grid { grid-template-columns: 1fr; }
+    .seq-row { flex-wrap: wrap; }
+    .seq-actor { min-width: auto; text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="ABOUT-BACK-ON-TRACK.html" class="brand">BackOnTrack</a>
+  <div class="nav-links">
+    <a href="ABOUT-BACK-ON-TRACK.html">Overview</a>
+    <a href="app-wyah.html" style="color:var(--accent)">WYAH</a>
+    <a href="app-dissociation.html">Dissociation</a>
+  </div>
+</nav>
+
+<!-- ═══════ Hero ═══════ -->
+<div class="sub-hero">
+  <div class="tag">Core Module &mdash; Cognitive Intervention</div>
+  <h1>"Why Am I Here?"<br><em>The WYAH Module</em></h1>
+  <p>
+    The intent-capture engine of BackOnTrack. WYAH injects a minimal form into any webpage,
+    asking you to declare your purpose before you get swept into the content stream.
+  </p>
+</div>
+
+<!-- ═══════ Content ═══════ -->
+<div class="content">
+
+  <!-- What it does -->
+  <section>
+    <div class="section-label">Purpose</div>
+    <h2 class="section-title">Capturing intent at the point of entry</h2>
+    <p class="prose">
+      When you click the BackOnTrack toolbar button, <strong>content_script.js</strong> fires and
+      injects <strong>wyah.js</strong> into the active tab. This script creates a small, unobtrusive
+      form at the top of the page with two fields: a text input asking <strong>"Why are you here?"</strong>
+      and a number input for setting a reminder timer in minutes (default: 5).
+    </p>
+    <p class="prose" style="margin-top:1rem;">
+      The form is injected via <strong>Shadow DOM</strong> to prevent CSS conflicts with the host page.
+      A fallback is provided for browsers that don't support Shadow DOM, with a notification
+      linking to compatibility information.
+    </p>
+  </section>
+
+  <!-- Sequence diagram -->
+  <section>
+    <div class="section-label">Interaction Flow</div>
+    <h2 class="section-title">Step by step</h2>
+
+    <div class="sequence-diagram">
+      <div class="seq-row">
+        <span class="seq-actor">User</span>
+        <div class="seq-arrow"></div>
+        <span class="seq-action">Clicks browser toolbar icon</span>
+      </div>
+      <div class="seq-row">
+        <span class="seq-actor">Chrome API</span>
+        <div class="seq-arrow"></div>
+        <span class="seq-action">browserAction.onClicked fires</span>
+      </div>
+      <div class="seq-row">
+        <span class="seq-actor">content_script</span>
+        <div class="seq-arrow"></div>
+        <span class="seq-action">executeScript(wyah.js) + insertCSS</span>
+      </div>
+      <div class="seq-row">
+        <span class="seq-actor">wyah.js</span>
+        <div class="seq-arrow"></div>
+        <span class="seq-action">Check if #wyah exists in DOM</span>
+      </div>
+      <div class="seq-row">
+        <span class="seq-actor">wyah.js</span>
+        <div class="seq-arrow"></div>
+        <span class="seq-action">wyahInit() &mdash; create Shadow DOM + form</span>
+      </div>
+      <div class="seq-row">
+        <span class="seq-actor">wyah.js</span>
+        <div class="seq-arrow"></div>
+        <span class="seq-action">dissociationSwitch() &mdash; toggle visual effect</span>
+      </div>
+      <div class="seq-row">
+        <span class="seq-actor">User</span>
+        <div class="seq-arrow"></div>
+        <span class="seq-action">Types reason + sets timer &rarr; Submit</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key features -->
+  <section>
+    <div class="section-label">Features</div>
+    <h2 class="section-title">What WYAH delivers</h2>
+
+    <ul class="feature-list">
+      <li>
+        <span class="feature-marker">1</span>
+        <div class="feature-content">
+          <h4>DOM Injection via Shadow DOM</h4>
+          <p>The WYAH form is encapsulated in a Shadow DOM root, preventing any CSS leakage from the host page. This ensures the extension looks consistent everywhere.</p>
+        </div>
+      </li>
+      <li>
+        <span class="feature-marker">2</span>
+        <div class="feature-content">
+          <h4>Duplicate Prevention</h4>
+          <p>Before injecting, wyah.js checks if the element #wyah already exists. If it does, the script exits gracefully &mdash; no duplicate forms, no errors.</p>
+        </div>
+      </li>
+      <li>
+        <span class="feature-marker">3</span>
+        <div class="feature-content">
+          <h4>Integrated Dissociation Trigger</h4>
+          <p>On activation, WYAH immediately calls dissociationSwitch(), toggling the visual distortion effect on the host page to create an immediate "pause" moment.</p>
+        </div>
+      </li>
+      <li>
+        <span class="feature-marker">4</span>
+        <div class="feature-content">
+          <h4>CSS Reset Isolation</h4>
+          <p>A comprehensive CSS reset (reset.css) ensures the WYAH form elements render identically across all websites, regardless of the host page's stylesheet.</p>
+        </div>
+      </li>
+      <li>
+        <span class="feature-marker">5</span>
+        <div class="feature-content">
+          <h4>Auto-growing Textarea</h4>
+          <p>The input area uses a mirrored hidden element to dynamically grow as you type, accommodating longer explanations of intent without scrolling.</p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Code reference -->
+  <section>
+    <div class="section-label">Source Code</div>
+    <h2 class="section-title">Core injection logic</h2>
+
+    <div class="code-block">
+<pre><span class="comment">// content_script.js &mdash; entry point</span>
+chrome.<span class="fn">browserAction</span>.onClicked.<span class="fn">addListener</span>(<span class="keyword">function</span>(tab) {
+  chrome.tabs.<span class="fn">executeScript</span>(<span class="keyword">null</span>, {file: <span class="string">"js/wyah.js"</span>});
+  chrome.tabs.<span class="fn">insertCSS</span>(<span class="keyword">null</span>, {file: <span class="string">"css/wyah.css"</span>});
+});
+
+<span class="comment">// wyah.js &mdash; DOM injection</span>
+<span class="keyword">function</span> <span class="fn">wyahInit</span>() {
+  <span class="keyword">var</span> htmlString = <span class="string">'&lt;form id="wyah-form"&gt;'</span>
+    + <span class="string">' &lt;input type="text" placeholder="Why are you here?"/&gt;'</span>
+    + <span class="string">' &lt;label&gt;&lt;input id="wyah-f-minutes" type="number"'</span>
+    + <span class="string">'  placeholder="5"/&gt;minutes&lt;/label&gt;'</span>
+    + <span class="string">'&lt;/form&gt;'</span>;
+
+  <span class="keyword">var</span> div = document.<span class="fn">createElement</span>(<span class="string">'div'</span>);
+  div.id = <span class="string">"wyah"</span>;
+  <span class="keyword">var</span> root = div.<span class="fn">createShadowRoot</span>();
+  root.innerHTML = htmlString;
+  document.documentElement.<span class="fn">appendChild</span>(div);
+}</pre>
+    </div>
+  </section>
+
+  <!-- Status -->
+  <section>
+    <div class="section-label">Current Status</div>
+    <h2 class="section-title">What works, what's next</h2>
+
+    <div class="status-grid">
+      <div class="status-card working">
+        <span class="status-badge">Working</span>
+        <h4>DOM Injection</h4>
+        <p>Form is successfully injected into any active tab via Shadow DOM with CSS isolation.</p>
+      </div>
+      <div class="status-card working">
+        <span class="status-badge">Working</span>
+        <h4>Dissociation Toggle</h4>
+        <p>Visual dissociation effect activates on extension click, toggling CSS classes on the html element.</p>
+      </div>
+      <div class="status-card wip">
+        <span class="status-badge">In Progress</span>
+        <h4>Intent Input &amp; Storage</h4>
+        <p>Text input exists but submit handling, local storage of the user's reason, and retrieval are not yet implemented.</p>
+      </div>
+      <div class="status-card wip">
+        <span class="status-badge">In Progress</span>
+        <h4>Countdown Timer</h4>
+        <p>The minutes input field is present but the actual countdown and reminder notification logic is not yet built.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <a href="ABOUT-BACK-ON-TRACK.html">&larr; Back to Overview</a>
+</footer>
+
+</body>
+</html>

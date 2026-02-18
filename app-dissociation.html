@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dissociation Module | BackOnTrack</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #0a0a0f;
+    --paper: #f4f1eb;
+    --accent: #e63946;
+    --accent-glow: #ff6b6b;
+    --calm: #457b9d;
+    --calm-light: #a8dadc;
+    --warm: #f4a261;
+    --muted: #6c757d;
+    --radius: 20px;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    background: var(--ink);
+    color: var(--paper);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── Navigation ── */
+  .top-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1.2rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(244,241,235,0.05);
+  }
+
+  .top-nav a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .top-nav a:hover { color: var(--paper); }
+
+  .top-nav .brand {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    color: var(--paper);
+    font-size: 0.9rem;
+  }
+
+  .nav-links { display: flex; gap: 1.5rem; }
+
+  /* ── Hero ── */
+  .sub-hero {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 2rem 4rem;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .sub-hero::before {
+    content: '~';
+    position: absolute;
+    font-family: 'Playfair Display', serif;
+    font-size: 35rem;
+    font-weight: 900;
+    color: var(--calm);
+    opacity: 0.03;
+    top: -3rem;
+    right: -3rem;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .sub-hero .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--calm-light);
+    margin-bottom: 1.5rem;
+  }
+
+  .sub-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+  }
+
+  .sub-hero h1 em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--calm), var(--calm-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .sub-hero p {
+    color: var(--muted);
+    font-size: 1.1rem;
+    max-width: 600px;
+    line-height: 1.8;
+  }
+
+  /* ── Content ── */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem 6rem;
+  }
+
+  .content section { margin-bottom: 5rem; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--calm-light);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.15;
+  }
+
+  .prose {
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.9;
+    max-width: 680px;
+  }
+
+  .prose strong { color: var(--paper); font-weight: 500; }
+
+  /* ── Live demo ── */
+  .demo-area {
+    margin-top: 2.5rem;
+    border-radius: var(--radius);
+    border: 1px solid rgba(244,241,235,0.08);
+    overflow: hidden;
+  }
+
+  .demo-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.5rem;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(244,241,235,0.06);
+  }
+
+  .demo-toolbar span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .demo-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.4rem 1.2rem;
+    border-radius: 100px;
+    border: 1px solid var(--calm);
+    background: transparent;
+    color: var(--calm-light);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .demo-btn:hover {
+    background: var(--calm);
+    color: var(--ink);
+  }
+
+  .demo-content {
+    padding: 2.5rem;
+    transition: all 0.8s ease;
+    position: relative;
+  }
+
+  .demo-content h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .demo-content p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .demo-content.dissociated {
+    filter: blur(3px) saturate(0.3) contrast(0.7);
+    opacity: 0.5;
+    transform: scale(0.98);
+    user-select: none;
+  }
+
+  /* ── Mechanism ── */
+  .mechanism-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .mech-card {
+    padding: 2rem;
+    border-radius: 14px;
+    border: 1px solid rgba(244,241,235,0.06);
+    background: rgba(255,255,255,0.02);
+  }
+
+  .mech-card h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    color: var(--calm-light);
+  }
+
+  .mech-card p {
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .mech-card code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--accent);
+    background: rgba(230,57,70,0.1);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  /* ── Code block ── */
+  .code-block {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(244,241,235,0.08);
+    border-radius: 14px;
+    padding: 2rem;
+    margin-top: 2rem;
+    overflow-x: auto;
+  }
+
+  .code-block pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+
+  .code-block .comment { color: rgba(244,241,235,0.25); }
+  .code-block .keyword { color: var(--accent); }
+  .code-block .string { color: var(--calm-light); }
+  .code-block .fn { color: var(--warm); }
+
+  /* ── CSS properties visual ── */
+  .css-props {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .css-prop {
+    padding: 1.2rem;
+    border-radius: 10px;
+    border: 1px solid rgba(244,241,235,0.06);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .css-prop .prop-name {
+    font-size: 0.72rem;
+    color: var(--calm-light);
+    margin-bottom: 0.3rem;
+  }
+
+  .css-prop .prop-val {
+    font-size: 0.8rem;
+    color: var(--paper);
+  }
+
+  .css-prop .prop-desc {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 0.4rem;
+  }
+
+  /* ── Psychology section ── */
+  .psych-block {
+    padding: 2.5rem;
+    border-radius: var(--radius);
+    border-left: 3px solid var(--calm);
+    background: rgba(69,123,157,0.05);
+    margin-top: 2rem;
+  }
+
+  .psych-block h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    color: var(--calm-light);
+  }
+
+  .psych-block p {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.8;
+  }
+
+  .psych-block p + p { margin-top: 0.8rem; }
+
+  footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    border-top: 1px solid rgba(244,241,235,0.06);
+  }
+
+  footer a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 768px) {
+    .mechanism-grid { grid-template-columns: 1fr; }
+    .css-props { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="ABOUT-BACK-ON-TRACK.html" class="brand">BackOnTrack</a>
+  <div class="nav-links">
+    <a href="ABOUT-BACK-ON-TRACK.html">Overview</a>
+    <a href="app-wyah.html">WYAH</a>
+    <a href="app-dissociation.html" style="color:var(--calm-light)">Dissociation</a>
+  </div>
+</nav>
+
+<!-- ═══════ Hero ═══════ -->
+<div class="sub-hero">
+  <div class="tag">Core Module &mdash; Perceptual Intervention</div>
+  <h1>Dissociation<br><em>Visual Pattern Break</em></h1>
+  <p>
+    A CSS-driven visual distortion effect that makes the current page feel suddenly unfamiliar &mdash;
+    jolting you out of autopilot mode and forcing conscious re-engagement with the content.
+  </p>
+</div>
+
+<!-- ═══════ Content ═══════ -->
+<div class="content">
+
+  <!-- What it does -->
+  <section>
+    <div class="section-label">Concept</div>
+    <h2 class="section-title">Breaking the trance with visual disruption</h2>
+    <p class="prose">
+      When the extension activates, <strong>dissociationSwitch()</strong> toggles two CSS classes
+      on the <strong>&lt;html&gt;</strong> element: <strong>.dissociation-prepare</strong> and
+      <strong>.dissociated</strong>. These classes trigger SCSS-defined transformations that
+      alter the entire page's visual properties &mdash; creating a jarring but harmless "dissociation"
+      effect that interrupts mindless scrolling.
+    </p>
+  </section>
+
+  <!-- Live demo -->
+  <section>
+    <div class="section-label">Interactive Demo</div>
+    <h2 class="section-title">See it in action</h2>
+    <p class="prose">Click the button below to toggle the dissociation effect on sample content.</p>
+
+    <div class="demo-area">
+      <div class="demo-toolbar">
+        <span>sample-webpage.html</span>
+        <button class="demo-btn" onclick="document.getElementById('demo-target').classList.toggle('dissociated')">Toggle Dissociation</button>
+      </div>
+      <div class="demo-content" id="demo-target">
+        <h3>Today's Top Stories</h3>
+        <p>You came here to check one thing, but this headline caught your eye. And now you're reading this paragraph instead of doing what you intended. The feed algorithm knows exactly how to keep you here. One more scroll. One more click. Before you know it, thirty minutes have vanished.</p>
+        <p style="margin-top:0.8rem">This is the pattern BackOnTrack disrupts. The dissociation effect makes the familiar feel strange, triggering your brain's novelty detection and snapping you back to conscious awareness.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mechanism -->
+  <section>
+    <div class="section-label">Mechanism</div>
+    <h2 class="section-title">How the effect works</h2>
+
+    <div class="mechanism-grid">
+      <div class="mech-card">
+        <h4>Class Toggle</h4>
+        <p>The function <code>dissociationSwitch()</code> toggles <code>.dissociation-prepare</code> and <code>.dissociated</code> on the root <code>&lt;html&gt;</code> element.</p>
+      </div>
+      <div class="mech-card">
+        <h4>CSS Cascade</h4>
+        <p>The SCSS files (dissociate.scss, wyah.scss) define transforms, filters, and opacity changes that cascade to all child elements when these classes are active.</p>
+      </div>
+      <div class="mech-card">
+        <h4>Transition Animation</h4>
+        <p>A <code>0.5s</code> transition duration creates a smooth, disorienting shift rather than an abrupt change &mdash; more effective at triggering conscious awareness.</p>
+      </div>
+      <div class="mech-card">
+        <h4>Full Reversibility</h4>
+        <p>Clicking again removes the classes, instantly restoring the page to its original state. No DOM modifications, no persistent changes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CSS properties used -->
+  <section>
+    <div class="section-label">Visual Properties</div>
+    <h2 class="section-title">CSS transformations applied</h2>
+    <p class="prose">
+      The dissociation effect leverages multiple CSS properties working in concert
+      to create the perceptual disruption.
+    </p>
+
+    <div class="css-props">
+      <div class="css-prop">
+        <div class="prop-name">filter: blur()</div>
+        <div class="prop-val">3px</div>
+        <div class="prop-desc">Softens all content, removing detail</div>
+      </div>
+      <div class="css-prop">
+        <div class="prop-name">filter: saturate()</div>
+        <div class="prop-val">0.3</div>
+        <div class="prop-desc">Drains color vibrancy</div>
+      </div>
+      <div class="css-prop">
+        <div class="prop-name">filter: contrast()</div>
+        <div class="prop-val">0.7</div>
+        <div class="prop-desc">Flattens visual depth</div>
+      </div>
+      <div class="css-prop">
+        <div class="prop-name">opacity</div>
+        <div class="prop-val">0.5</div>
+        <div class="prop-desc">Fades page presence</div>
+      </div>
+      <div class="css-prop">
+        <div class="prop-name">transform: scale()</div>
+        <div class="prop-val">0.98</div>
+        <div class="prop-desc">Subtle shrink, creates distance</div>
+      </div>
+      <div class="css-prop">
+        <div class="prop-name">transition</div>
+        <div class="prop-val">0.8s ease</div>
+        <div class="prop-desc">Smooth, disorienting onset</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Code -->
+  <section>
+    <div class="section-label">Source Code</div>
+    <h2 class="section-title">The toggle function</h2>
+
+    <div class="code-block">
+<pre><span class="comment">// wyah.js &mdash; dissociation toggle</span>
+<span class="keyword">function</span> <span class="fn">dissociationSwitch</span>() {
+  document.documentElement.classList.<span class="fn">toggle</span>(<span class="string">'dissociation-prepare'</span>);
+  document.documentElement.classList.<span class="fn">toggle</span>(<span class="string">'dissociated'</span>);
+  console.<span class="fn">log</span>(<span class="string">'Class .dissociated toggled'</span>);
+}
+
+<span class="comment">// Called immediately on script injection</span>
+<span class="fn">dissociationSwitch</span>();</pre>
+    </div>
+  </section>
+
+  <!-- Psychology -->
+  <section>
+    <div class="section-label">Psychology</div>
+    <h2 class="section-title">Why visual disruption works</h2>
+
+    <div class="psych-block">
+      <h4>The Orienting Response</h4>
+      <p>
+        When the brain detects an unexpected change in the visual environment, it triggers
+        the <strong style="color:var(--paper)">orienting response</strong> &mdash; an involuntary shift of attention
+        toward the novel stimulus. This is the same mechanism that makes you notice movement
+        in your peripheral vision.
+      </p>
+      <p>
+        By subtly distorting a familiar page, the dissociation effect hijacks this response
+        and redirects it toward <strong style="color:var(--paper)">conscious self-awareness</strong>.
+        The user suddenly notices they are looking at a screen, rather than being absorbed
+        by the content. This momentary "snap back" is the window in which the WYAH module's
+        question becomes most effective.
+      </p>
+      <p>
+        The effect is designed to be <strong style="color:var(--paper)">uncomfortable but not aversive</strong> &mdash;
+        enough to break flow state, not enough to cause annoyance or eye strain. The 0.5-second
+        transition ensures gradual onset, avoiding a startling experience.
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <a href="ABOUT-BACK-ON-TRACK.html">&larr; Back to Overview</a>
+</footer>
+
+</body>
+</html>
